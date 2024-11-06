@@ -1,5 +1,6 @@
 import plotly.express as px
 from palmerpenguins import load_penguins
+from shiny import App, ui, reactive
 from shiny.express import input, ui, render
 from shinywidgets import render_widget, render_plotly
 import seaborn as sns
@@ -86,7 +87,7 @@ with ui.layout_columns():
             @render_plotly
             def plotly_scatterplot():
                 return px.scatter(
-                data_frame=penguins,
+                data_frame=filtered_data(),
                 x="body_mass_g",
                 y="bill_depth_mm",
                 color="species",
@@ -102,7 +103,7 @@ with ui.layout_columns():
             @render.plot
             def plot2():
                 ax = sns.histplot(
-                    data=penguins,
+                    data=filtered_data(),
                     x=input.selected_attribute(),
                     bins=input.seaborn_bin_count(),
             )
@@ -110,3 +111,11 @@ with ui.layout_columns():
                 ax.set_xlabel(input.selected_attribute())
                 ax.set_ylabel("Number")
                 return ax
+
+# --------------------------------------------------------
+# Reactive calculations and effects
+# --------------------------------------------------------
+
+@reactive.calc
+def filtered_data():
+    return penguins
